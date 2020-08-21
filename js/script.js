@@ -253,7 +253,7 @@ function Page() {
                  document.getElementsByClassName('lyrics')[0].removeAttribute('data-toggle');
              }
          }
-         xhttp.open('GET', 'https://api.vagalume.com.br/search.php?apikey=' + API_KEY + '&art=' + currentArtist + '&mus=' + currentSong.toLowerCase(), true);
+         xhttp.open('GET', 'https://api.lyrics.ovh/v1/' + currentSong + '/' + currentArtist , true); //Превземање на песната која се емитува - АКО ЈА ИМА
          xhttp.send()
      }
 }
