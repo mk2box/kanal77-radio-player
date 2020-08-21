@@ -1,7 +1,7 @@
 # Канал 77 Радио Плеер
 ### Радио Плеер за Icecast и Shoutcast сервери
 
-![Радио Плеер](https://prnt.sc/u3h1ho)
+(https://prnt.sc/u3h1ho)
 
 ## Потребно:
 - PHP 5.3 или поголема
