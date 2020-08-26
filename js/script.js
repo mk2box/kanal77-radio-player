@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Trajce Gogov
+Трајче Гогов - GospoD
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -51,17 +51,14 @@ function Page() {
         var currentArtist = document.getElementById('currentArtist');
 
         if (song !== currentSong.innerHTML) {
-            // Animate transition
             currentSong.className = 'animated flipInY text-uppercase';
             currentSong.innerHTML = song;
 
             currentArtist.className = 'animated flipInY text-capitalize';
             currentArtist.innerHTML = artist;
 
-            // Refresh modal title
             document.getElementById('lyricsSong').innerHTML = song + ' - ' + artist;
 
-            // Remove animation classes
             setTimeout(function () {
                 currentSong.className = 'text-uppercase';
                 currentArtist.className = 'text-capitalize';
@@ -78,19 +75,39 @@ function Page() {
         const JINGAL = "img/izveduvaci/kanal77-512x512.png";
         const POZADINA = "img/izveduvaci/kanal77-512x512.png";
         const PROMO = "img/izveduvaci/kanal77-512x512.png";
+        const CAT32 ="img/izveduvaci/kanal77-512x512.png";
+        const FON2020 = "img/izveduvaci/kanal77-512x512.png";
+
 
         var artistRadio = info.artist.replace(/&apos;/g, '\'');
         if (artistRadio == 'FON 2019') {
         var urlCoverArt = JINGAL;
-        } else if (artistRadio == 'K77 PRETPLADNE SO GABI'){
+        } 
+        else if (artistRadio == 'K77 PRETPLADNE SO GABI'){
         var urlCoverArt = POZADINA;
-        } else if (artistRadio == 'REGARD'){
+        } 
+        else if (artistRadio == 'REGARD'){
         var urlCoverArt = PROMO;
-        } else {
+        } 
+        else if (artistRadio == 'K77'){
+        var urlCoverArt = K77;
+        }
+        else if (artistRadio == 'CAT38'){
+            var urlCoverArt = CAT32;
+        }
+        else if (artistRadio == 'CAT36'){
+            var urlCoverArt = CAT32;
+        }
+        else if (artistRadio == 'FON2020'){
+            var urlCoverArt = FON2020;
+        }
+        else if (artistRadio == '06 KANAL77'){
+            var urlCoverArt = FON2020;
+        }
+        else {
         var urlCoverArt = DEFAULT_COVER_ART;
 	    }
 
-        // Get cover art for song history
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
@@ -99,7 +116,6 @@ function Page() {
 
                 document.querySelectorAll('#historicSong article .cover-historic')[n].style.backgroundImage = 'url(' + artworkUrl100 + ')';
             }
-            // Formating characters to UTF-8
             var music = info.song.replace(/&apos;/g, '\'');
             var songHist = music.replace(/&amp;/g, '&');
 
@@ -109,7 +125,6 @@ function Page() {
             $songName[n].innerHTML = songHist;
             $artistName[n].innerHTML = artistHist;
 
-            // Add class for animation
             $historicDiv[n].classList.add('animated');
             $historicDiv[n].classList.add('slideInRight');
         }
@@ -128,14 +143,34 @@ function Page() {
         const JINGAL = "img/izveduvaci/kanal77-512x512.png";
         const POZADINA = "img/izveduvaci/kanal77-512x512.png";
         const PROMO = "img/izveduvaci/kanal77-512x512.png";
+        const CAT32 = "img/izveduvaci/kanal77-512x512.png";
+        const FON2020 = "img/izveduvaci/kanal77-512x512.png";
 
         if (artist  == 'FON 2019') {
         var urlCoverArt = JINGAL;
-        } else if (artist  == 'K77 PRETPLADNE SO GABI'){
+        } 
+        else if (artist  == 'K77 PRETPLADNE SO GABI'){
         var urlCoverArt = POZADINA;
-        } else if (artist  == 'REGARD'){
+        } 
+        else if (artist  == 'REGARD'){
         var urlCoverArt = PROMO;
-        } else {
+        } 
+        else if (artist == 'K77'){
+        var urlCoverArt = K77;
+        }
+        else if (artist == 'CAT32'){
+            var urlCoverArt = CAT32;
+        }
+        else if (artist == 'CAT36'){
+            var urlCoverArt = CAT32;
+        }
+        else if (artist == 'FON2020'){
+            var urlCoverArt = FON2020;
+        }
+        else if (artist == '06 KANAL77'){
+            var urlCoverArt = FON2020;
+        }
+        else {
         var urlCoverArt = DEFAULT_COVER_ART;
 	    }
 
@@ -144,12 +179,10 @@ function Page() {
             var coverArt = document.getElementById('currentCoverArt');
             var coverBackground = document.getElementById('bgCover');
 
-            // Get cover art URL on iTunes API
             if (this.readyState === 4 && this.status === 200) {
                 var data = JSON.parse(this.responseText);
                 var artworkUrl100 = (data.resultCount) ? data.results[0].artworkUrl100 : urlCoverArt;
 
-                // If any data is returned, change the image resolution or set the default
                 urlCoverArt = (artworkUrl100 != urlCoverArt) ? artworkUrl100.replace('100x100bb', '512x512bb') : urlCoverArt;
                 var urlCoverArt96 = (artworkUrl100 != urlCoverArt) ? urlCoverArt.replace('512x512bb', '96x96bb') : urlCoverArt;
                 var urlCoverArt128 = (artworkUrl100 != urlCoverArt) ? urlCoverArt.replace('512x512bb', '128x128bb') : urlCoverArt;
@@ -205,7 +238,7 @@ function Page() {
                 }
             }
         }
-        xhttp.open('GET', 'https://itunes.apple.com/search?term=' + artist + ' ' + song + '&media=music&limit=1', true);
+        xhttp.open('GET', 'https://itunes.apple.com/search?term=' + artist + ' ' + song + '&media=music&limit=1', true); // претражување на слики од iTunes
         xhttp.send();
     }
 
@@ -253,14 +286,13 @@ function Page() {
                  document.getElementsByClassName('lyrics')[0].removeAttribute('data-toggle');
              }
          }
-         xhttp.open('GET', 'https://api.lyrics.ovh/v1/' + currentSong + '/' + currentArtist , true); //Превземање на песната која се емитува - АКО ЈА ИМА
+         xhttp.open('GET', 'https://api.lyrics.ovh/v1/' + currentSong + '/' + currentArtist , true); // Од каде да ги чита текстовите за песните
          xhttp.send()
      }
 }
 
 var audio = new Audio(URL_STREAMING2);
 
-// Player control
 function Player() {
     this.play = function () {
         audio.play();
@@ -284,7 +316,6 @@ function Player() {
     };
 }
 
-// On play, change the button to pause
 audio.onplay = function () {
     var botao = document.getElementById('playerButton');
 
@@ -293,7 +324,6 @@ audio.onplay = function () {
     }
 }
 
-// On pause, change the button to play
 audio.onpause = function () {
     var botao = document.getElementById('playerButton');
 
@@ -302,7 +332,6 @@ audio.onpause = function () {
     }
 }
 
-// Unmute when volume changed
 audio.onvolumechange = function () {
     if (audio.volume > 0) {
         audio.muted = false;
@@ -310,7 +339,7 @@ audio.onvolumechange = function () {
 }
 
 audio.onerror = function () {
-    var confirmacao = confirm('Error on communicate to server. \nClick OK to try again.');
+    var confirmacao = confirm('Грешка при комуникацијата со серверот. \nКликни ОК и продолжи пак.');
 
     if (confirmacao) {
         window.location.reload();
@@ -382,14 +411,12 @@ function getStreamingData() {
 
             var currentSongElement = document.getElementById('currentSong');
 
-            // Formating characters to UTF-8
             let song = data.currentSong.replace(/&apos;/g, '\'');
             currentSong = song.replace(/&amp;/g, '&');
 
             let artist = data.currentArtist.replace(/&apos;/g, '\'');
             currentArtist = artist.replace(/&amp;/g, '&');
 
-            // Change the title
             document.title = currentSong + ' - ' + currentArtist + ' | ' + RADIO_NAME;
 
             if (currentSongElement.innerText !== song.trim()) {
@@ -406,7 +433,6 @@ function getStreamingData() {
 
     var d = new Date();
 
-    // Requisition with timestamp to prevent cache on mobile devices
     xhttp.open('GET', 'api.php?url=' + URL_STREAMING + '&streamtype=' + STREAMING_TYPE + '&historic=' + HISTORIC + '&next=' + NEXT_SONG + '&t=' + d.getTime(), true);
     xhttp.send();
 }
@@ -421,13 +447,13 @@ document.addEventListener('keydown', function (k) {
     var page = new Page();
 
     switch (key) {
-        // Arrow up
+        // Стрелка нагоре
         case 38:
             volumeUp();
             slideVolume.value = decimalToInt(audio.volume);
             page.changeVolumeIndicator(decimalToInt(audio.volume));
             break;
-        // Arrow down
+        // Стрелка надоле
         case 40:
             volumeDown();
             slideVolume.value = decimalToInt(audio.volume);
