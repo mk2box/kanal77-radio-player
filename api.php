@@ -1,7 +1,15 @@
 <?php
+// URL of SHOUTCast streaming
 $url = filter_input(INPUT_GET, 'url', FILTER_SANITIZE_URL);
+
+// true or false to get the next song
+// Your streaming must show thins info. You can check if it is disponible on http://streaming URL:port/nextsong
 $nextSong = filter_input(INPUT_GET, 'next', FILTER_VALIDATE_BOOLEAN);
+
+// true or false to show history of played songs
 $historic = filter_input(INPUT_GET, 'historic', FILTER_VALIDATE_BOOLEAN);
+
+// Type of streaming server used, shoutcast or icecast supported
 $streamingType = filter_input(INPUT_GET, 'streamtype', FILTER_SANITIZE_STRING);
 
 if(!empty($url)) {
@@ -21,8 +29,8 @@ if(!empty($url)) {
 			}
 			
 			do {
-			curl_multi_exec($curl, $running);
-			curl_multi_select($curl);
+				curl_multi_exec($curl, $running);
+				curl_multi_select($curl);
 			} while ($running > 0);
 			
 			foreach(array_keys($ch) as $key){
@@ -33,7 +41,7 @@ if(!empty($url)) {
 			$data = $content[0];
 
 			if($nextSong) {
-				$nextSongName = (isset($content[2])) ? explode('-', $content[2]) : '';
+				$nextSongName = (isset($content[2])) ? explode('-', $content[2], 2) : '';
 
 				if(isset($nextSongName[1])) {
 					$array['nextSong'] = ['artist' => $nextSongName[0], 'song' => $nextSongName[1]];
@@ -41,17 +49,27 @@ if(!empty($url)) {
 					$array['nextSong'] = ['artist' => '', 'song' => $nextSongName[0]];
 				}
 			}
+
+			// Put the songs name between <music> tag
 			$pagina = str_replace('</td><td>', '<music>', $content[1], $count);
+
 			$playedSongs = explode('<music>', $pagina);
+
+			// Remove unrelacionated content
 			unset($playedSongs[0]);
 			unset($playedSongs[1]);
 			unset($playedSongs[2]);
 
 			foreach($playedSongs as $song) {
+				// Get the name of the song
 				$cutStr = strpos($song, '</td></tr>');
 				$playedSong = substr($song, 0, $cutStr);
-				$songData = explode('-', $playedSong);
+				
+				// Separate artist from song
+				$songData = explode('-', $playedSong, 2);
 				$songNameHistoric = (!empty($songData[1])) ? trim($songData[1]) : '';
+				
+				// Put in the principal array
 				$array['songHistory'][] = ['artist' => rtrim($songData[0]), 'song' => $songNameHistoric];
 			}
 			
@@ -76,19 +94,25 @@ if(!empty($url)) {
 			$array['listeners'] = $streamingData[4];
 			$array['transmissionFrequency'] = $streamingData[5];	
 			$playingNow = $streamingData[6];
+
+			// If there is a comma in the song name, join the following arrays
 			if(count($streamingData) > 7) {
 				$playingNow = '';
 				for($i = 6; $i < count($streamingData); $i++) {
 					$playingNow .= ','.$streamingData[$i];
 				}
 			}
-			$currentSong = explode('-', $playingNow);
+			
+			// Separate artist from song
+			$currentSong = explode('-', $playingNow, 2);
 
 			$artist = trim($currentSong[0]);
 
 			if(substr($currentSong[0], 0, 1) === ',') {
 				$artist = substr($currentSong[0], 1, -1);
 			}
+
+			// Remover tags html da string
 			if(count($currentSong) === 2) {
 				if(substr($currentSong[1], -14) === '</body></html>') {
 					$array['currentSong'] = (!empty($currentSong[1])) ? trim(substr($currentSong[1], 0, -14)) : '...';
@@ -113,28 +137,36 @@ if(!empty($url)) {
 		$url = implode("/", $url_explode);
 		$url = $url."/status-json.xsl";
 
-		// доколку cURL не работе користи file_get_contents
+		// if cURL don't works, use file_get_contents
 		// $curl = curl_init($url);
 		// curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		// curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		// curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0');
+			
 		// $data = curl_exec($curl);
 		// curl_close($curl);
+
 		$data = file_get_contents($url);
+
 		if(!empty($data)) {
+
 			$ice_stats = json_decode($data, true);
+
 			if(is_array($ice_stats["icestats"]["source"])) {
 				$ice_stats_source = $ice_stats["icestats"]["source"][0];
 			} else {
 				$ice_stats_source = $ice_stats["icestats"]["source"];
 			}
+			
 			$array['listenersPeak'] = $ice_stats_source["listener_peak"];
 			$array['listeners'] = $ice_stats_source["listeners"];
 			$array['transmissionFrequency'] = $ice_stats_source["bitrate"];	
 			$currently_playing = $ice_stats_source["title"];
-			$currently_playing = explode(" - ", $currently_playing);
+			$currently_playing = explode(" - ", $currently_playing, 2);
 			$array['currentSong'] = $currently_playing[1];
 			$array['currentArtist'] = explode(";",$currently_playing[0])[0];
+
+			// check if it is alredy in played songs and append if necessary
 			$track_history = file("player.log");
 			$track_list = array_slice($track_history, 0, 20);
 			if (stripos($track_history[0], $currently_playing[0]." - ".$currently_playing[1]) === false){
@@ -155,7 +187,7 @@ if(!empty($url)) {
 			foreach ($track_history as $line){
 				if($i > 4) continue;
 
-				$track = explode(" - ", $line);
+				$track = explode(" - ", $line, 2);
 				$last_artist = explode(";",$track[0])[0];
 				$last_song = str_replace(array("\n", "\r"), '', $track[1]);
 				$array['songHistory'][] = ['artist' => "$last_artist", 'song' => "$last_song"];
